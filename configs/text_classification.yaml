@@ -1,0 +1,32 @@
+# text_classification.yaml
+# config for the IMDd byte-level classification task - binary, seq_len 4096
+# settings based on LRA paper [X] Tay et al. (2020) Appendix A.1.2
+# free-for-all setting so can be adjusted if hardware is a bottleneck
+
+# note: baseline at seq_len=4096 will need university hardware - 4096x4096 attention matrix is large
+
+task: text_classification
+num_classes: 2
+seq_len: 4096
+vocab_size: 256
+
+# model - same for all variants
+d_model: 512
+num_heads: 8
+num_layers: 6
+d_ff: 2048
+dropout: 0.1
+
+# training
+batch_size: 32
+learning_rate: 0.001
+epochs: 20
+warmup_steps: 1000
+seed: 42
+
+# variant-specific settings
+longformer_window_size: 512
+linformer_proj_dim: 256
+reformer_n_rounds: 4
+reformer_chunk_size: 64
+reformer_n_buckets: 64

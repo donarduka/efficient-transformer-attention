@@ -1,0 +1,36 @@
+# configs/integration_test.yaml
+# small config just to confirm the full pipeline works end to end without errors
+# not for real experiments - use listops.yaml or text_classification.yaml for those
+
+task: listops
+num_classes: 10
+seq_len: 2048
+vocab_size: 20
+
+# deliberately small so it runs fast on local hardware
+d_model: 64
+num_heads: 4
+num_layers: 2
+d_ff: 256
+dropout: 0.1
+
+# training
+batch_size: 4
+learning_rate: 0.001
+epochs: 2
+warmup_steps: 10
+seed: 42
+
+# evaluation
+batch_size: 4
+metrics:
+  - accuracy
+  - inference_time
+  - peak_memory
+
+# variant-specific settings
+longformer_window_size: 64
+linformer_proj_dim: 32
+reformer_n_rounds: 2
+reformer_chunk_size: 16
+reformer_n_buckets: 4
