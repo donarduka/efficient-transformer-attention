@@ -50,7 +50,6 @@ def load_training_logs(task):
     logs = {}
     for variant in VARIANTS:
         path = os.path.join(RESULTS_DIR, f"{variant}_{task}_log.json")
-        print(f"looking for: {path}, exists: {os.path.exists(path)}") # debug
         if os.path.exists(path):
             with open(path, "r") as f:
                 logs[variant] = json.load(f)
@@ -112,6 +111,55 @@ def plot_memory(results, task):
     save_plot(fig, f"memory_{task}")
     plt.close(fig)
 
+def plot_seq_len_benchmark(task=None):
+    """
+    Line plots showing inference time vs sequence length for all four variants.
+    This directly tests the complexity claims from the papers - baseline should grow quadratically while efficient variants should grow more slowly.
+    """
+    path = os.path.join(RESULTS_DIR, "benchmark_seq_len.json")
+    if not os.path.exists(path):
+        print("no sequence length benchmark found - run scripts/benchmark_seq_len.py first")
+        return
+
+    with open(path, "r") as f:
+        data = json.load(f)
+
+    # inference time plot
+    fig, ax = plt.subplots()
+    for variant in VARIANTS:
+        if variant not in data:
+            continue
+        seq_lengths = data[variant]["seq_lengths"]
+        times = data[variant]["avg_time_ms"]
+        ax.plot(seq_lengths, times, color=COLOURS[variant], marker="o", label=variant)
+
+    ax.set_xlabel("sequence length")
+    ax.set_ylabel("avg inference time (ms)")
+    ax.set_title("inference time vs sequence length")
+    ax.legend()
+    save_plot(fig, "seq_len_inference_time")
+    plt.close(fig)
+
+    # memory plot - skip if all zeros (CPU/MPS)
+    memory_vals = [data[v]["peak_memory_mb"] for v in VARIANTS if v in data]
+    if any(m > 0 for ms in memory_vals for m in ms):
+        fig, ax = plt.subplots()
+        for variant in VARIANTS:
+            if variant not in data:
+                continue
+            seq_lengths = data[variant]["seq_lengths"]
+            memory = data[variant]["peak_memory_mb"]
+            ax.plot(seq_lengths, memory, color=COLOURS[variant], marker="o", label=variant)
+
+        ax.set_xlabel("sequence length")
+        ax.set_ylabel("peak_memory (MB)")
+        ax.set_title("peak memory vs sequence length")
+        ax.legend()
+        save_plot(fig, "seq_len_memory")
+        plt.close(fig)
+    else:
+        print("skipping memory vs seq_len plot - peak memory only available on CUDA")
+
 def plot_training_curves(logs, task):
     """
     Training loss and accuracy curves for all variants on the same axes.
@@ -153,7 +201,6 @@ def plot_training_curves(logs, task):
 
 
 def main():
-    print(f"RESULTS_DIR: {RESULTS_DIR}")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", required=True, choices=["listops", "text_classification", "integration_test"])
@@ -161,9 +208,11 @@ def main():
 
     print(f"generating plots for {args.task}...\n")
 
+    # sequence length benchmark - independent of task from benchmark_seq_len.py
+    plot_seq_len_benchmark()
+
     # training curves only need training logs
     logs = load_training_logs(args.task)
-    print(f"loaded logs for: {list(logs.keys())}")
     if logs:
         plot_training_curves(logs, args.task)
 
