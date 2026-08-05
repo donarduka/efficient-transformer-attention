@@ -30,6 +30,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from scripts.train import load_config, build_model, load_data, get_device
 
+# timing follows PyTorch benchmarking best practices
+# https://docs.pytorch.org/tutorials/recipes/recipes/benchmark.html
 def measure_inference(model, input_ids, attention_mask, device, n_runs=10):
     """
     Measure average inference time and peak memory over n_runs forward passes.
