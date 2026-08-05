@@ -6,10 +6,10 @@ Shared training loop for all four attention variants
 Loads the config for the specified task, builds the model with the specified attention variant, trains on the LRA dataset and saves the trained model and training log to results/.
 
 Usage:
-    python3 scipt/evaluate.py --variant baseline --task listops
-    python3 scipt/evaluate.py --variant longformer --task text_classification
-    python3 scipt/evaluate.py --variant linformer --task lisops
-    python3 scipt/evaluate.py --variant reformer --task text_classificaiton
+    python3 scipt/train.py --variant baseline --task listops
+    python3 scipt/train.py --variant longformer --task text_classification
+    python3 scipt/train.py --variant linformer --task listops
+    python3 scipt/train.py --variant reformer --task text_classification
 
 All four variants run through the same BaselineTransformerEncoder stack - only the attention class changes, satisfying the unified evaluation framework.
 """
@@ -25,7 +25,7 @@ import torch.optim as optim
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from baseline.attention import(BaselineTransformerEncoder, MultiHeadSelfAttention)
+from baseline.attention import (BaselineTransformerEncoder, MultiHeadSelfAttention)
 from longformer.attention import LongformerAttention
 from linformer.attention import LinformerAttention
 from reformer.attention import ReformerAttention
@@ -86,7 +86,7 @@ def get_device():
     elif torch.backends.mps.is_available():
         return torch.device("mps") # apple silicon
     else:
-        return torch.debice("cpu")
+        return torch.device("cpu")
     
 def load_data(config):
     """
@@ -105,7 +105,7 @@ def load_data(config):
         # runs scripts/download_data.py first to generate the dataset
         data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "listops")
         if not os.path.exists(data_dir):
-            raise FileNotFoundError(f"ListOps data not founds at {data_dir}. Run scripts/download_data.py first")
+            raise FileNotFoundError(f"ListOp data not founds at {data_dir}. Run scripts/download_data.py first")
         train_data = torch.load(os.path.join(data_dir, "train.pt"), weights_only=False)
         test_data = torch.load(os.path.join(data_dir, "test.pt"), weights_only=False)
 

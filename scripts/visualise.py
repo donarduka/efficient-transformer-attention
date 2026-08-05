@@ -61,7 +61,7 @@ def save_plot(fig, name):
     """ save as both png (for dissertation doc) and pdf (for quality)"""
     os.makedirs(PLOTS_DIR, exist_ok=True)
     fig.savefig(os.path.join(PLOTS_DIR, f"{name}.png"), dpi=150, bbox_inches="tight")
-    fig.savefig(os.path.join(PLOTS_DIR, f"{name}.png"), bbox_inches="tight")
+    fig.savefig(os.path.join(PLOTS_DIR, f"{name}.pdf"), bbox_inches="tight")
     print(f"saved {name}.png and {name}.pdf")
 
 def plot_accuracy(results, task):
@@ -93,8 +93,8 @@ def plot_inference_time(results, task):
     plt.close(fig)
 
 def plot_memory(results, task):
-    """Bar chart comparing peak memory usage. Only available on CUDA - skippped on CPU/MPS"""
-    variants = list(results, task)
+    """Bar chart comparing peak memory usage. Only available on CUDA - skipped on CPU/MPS"""
+    variants = list(results.keys())
     memory = [results[v]["peak_memory_mb"] for v in variants]
 
     # peak memory stats are only available on CUDA - MPS and CPU return 0

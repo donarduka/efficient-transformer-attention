@@ -8,7 +8,7 @@ it uses at each sequence length. This directly tests the complexity claims from 
 - baseline -> O(n^2)
 - longformer -> O(n * window_size)
 - linformer -> O(n * proj_dim)
-- reformer -> O(n long n)
+- reformer -> O(n log n)
 
 The Reformer paper [X] Kitaev et al. (2020) Figure 5 shows LSH only beats full attention beyond ~2048 tokens
     - this benchmark replicates that experiment.
@@ -36,7 +36,7 @@ VARIANTS = ["baseline", "longformer", "linformer", "reformer"]
 # sequence lengths to benchmark - covers short to full LRA lengths
 SEQ_LENGTHS = [128, 256, 512, 1024, 2048]
 
-# small model config - same across all variants so compairson is fair
+# small model config - same across all variants so comparison is fair
 # not using full d_model=512 here as baseline at seq_len=2048 as OOM's Macbook Pro M3
 BENCH_CONFIG = {
     "d_model" : 128,
@@ -58,7 +58,7 @@ N_RUNS = 20 # number of forward passes to avg over
 
 def benchmark_variant(variant, seq_len, device, n_runs=N_RUNS):
     """
-    Measure average inference time and peak memory for noe variant at on sequence length.
+    Measure average inference time and peak memory for one variant at on sequence length.
 
     Runs a warmup pass first to avoid measuring JIT/compilation overhead then averages over n_runs forward passes.
 
@@ -81,7 +81,7 @@ def benchmark_variant(variant, seq_len, device, n_runs=N_RUNS):
     model = model.to(device)
     model.eval()
 
-    # random dummpy input - we only care about time and memory, not accuracy
+    # random dummy input - we only care about time and memory, not accuracy
     input_ids = torch.randint(0, config["vocab_size"], (1, seq_len)).to(device)
     attention_mask = torch.ones(1, seq_len, dtype=torch.long).to(device)
 

@@ -78,7 +78,7 @@ def test_different_sequence_lengths():
         assert out.shape == (BATCH, seq_len, D_MODEL)
         assert not torch.isnan(out).any()
 
-    print("test differet sequence lengths passed")
+    print("test different sequence lengths passed")
 
 if __name__ == "__main__":
     print("running reformer tests...\n")

@@ -11,10 +11,10 @@ Loads a trained model from results/, runs it on the test set and records:
 Results are saved to results/ as a JSON file for use in visualisation.
 
 Usage:
-    python3 scipt/evaluate.py --variant baseline --task listops
-    python3 scipt/evaluate.py --variant longformer --task text_classification
-    python3 scipt/evaluate.py --variant linformer --task lisops
-    python3 scipt/evaluate.py --variant reformer --task text_classificaiton
+    python3 scipts/evaluate.py --variant baseline --task listops
+    python3 scipts/evaluate.py --variant longformer --task text_classification
+    python3 scipts/evaluate.py --variant linformer --task lisops
+    python3 scipts/evaluate.py --variant reformer --task text_classificaiton
 """
 
 import os
@@ -82,7 +82,7 @@ def measure_inference(model, input_ids, attention_mask, device, n_runs=10):
 
     # peak memory - only available on CUDA
     if device.type == "cuda":
-        peak_memory_mb = torch.cuda.max_memory_allocated() / 10224 ** 2
+        peak_memory_mb = torch.cuda.max_memory_allocated() / 1024 ** 2
     else:
         # mps and cpu dont expose peak memory in the same way
         peak_memory_mb = 0.0
@@ -107,7 +107,7 @@ def evaluate(model, loader, device):
 
     with torch.no_grad():
         for batch in loader:
-            inputs_ids, labels, attention_mask = batch
+            input_ids, labels, attention_mask = batch
             input_ids = input_ids.to(device)
             labels = labels.to(device)
             attention_mask = attention_mask.to(device)
@@ -121,12 +121,14 @@ def evaluate(model, loader, device):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--variant", required=True, choices=["baseline", "longoformer", "linformer", "reformer"])
+    parser.add_argument("--variant", required=True, choices=["baseline", "longformer", "linformer", "reformer"])
     parser.add_argument("--task", required=True, choices=["listops", "text_classification", "integration_test"])
     parser.add_argument("--n_runs", type=int, default=10, help="number of forward passes to average for timing")
     args = parser.parse_args()
 
     config = load_config(args.task)
+    torch.manual_seed(config["seed"])
+    device = get_device()
     print(f"using device: {device}")
 
     results_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results")
@@ -149,11 +151,11 @@ def main():
     print(f"accuracy: {accuracy:.4f}")
 
     # use the first batch for timing - representative of a single forward pass
-    first_batch - next(iter(test_loader))
+    first_batch = next(iter(test_loader))
     input_ids, _, attention_mask = first_batch
 
     print(f"benchamrking inference time over {args.n_runs} runs...")
-    avg_time_ms, peak_memory_mb = measure_inference(model, input_ids, attention_mask, device, n_runds=args.n_runs)
+    avg_time_ms, peak_memory_mb = measure_inference(model, input_ids, attention_mask, device, n_runs=args.n_runs)
     print(f"avg inference time: {avg_time_ms:.2f}ms")
     print(f"peak memory: {peak_memory_mb:.2f}MB")
 
@@ -164,12 +166,12 @@ def main():
         "avg_inference_time_ms": avg_time_ms,
         "peak_memory_mb": peak_memory_mb,
         "device": str(device),
-        "batch_size": config["batch-size"],
+        "batch_size": config["batch_size"],
         "seq_len": config["seq_len"],
         "n_runs": args.n_runs,
     }
 
-    os.maskedirs(results_dir, exist_ok=True)
+    os.makedirs(results_dir, exist_ok=True)
     out_path = os.path.join(results_dir, f"{args.variant}_{args.task}_eval.json")
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2)

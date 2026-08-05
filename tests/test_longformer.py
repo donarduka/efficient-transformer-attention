@@ -64,7 +64,7 @@ def test_window_mask_restricts_attention():
     weight_10_to_20 = weights[0, :, 10, 20] # all heads, query10, key=20
     assert (weight_10_to_20 < 1e-6).all(), \
         f"token 10 should not attend to token 20 with window_size={WINDOW_SIZE}"
-    print("test window mask restrcits attention passed")
+    print("test window mask restricts attention passed")
 
 
 def test_global_token_sees_all():
@@ -79,7 +79,7 @@ def test_global_token_sees_all():
     weight_global_to_far = weights[0, :, 0, 30] # query=0 (global), key=30
     assert (weight_global_to_far > 0).any(), \
         "global token at position 0 should attend to distant positions"
-    print("test_global_token_sees_all passed")
+    print("test global token sees all passed")
 
 
 if __name__ == "__main__":
