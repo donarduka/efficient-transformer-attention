@@ -93,7 +93,6 @@ def load_data(config):
     Load the LRA dataset for the specified task using tensorflow_datasets.
     Returns train and test DataLoaders. The LRA datasets are loaded as described in [X] Tay et al. (2020).
     """
-    import tensorflow_datasets as tfds
     from torch.utils.data import DataLoader, TensorDataset
 
     task = config["task"]
@@ -110,6 +109,7 @@ def load_data(config):
         test_data = torch.load(os.path.join(data_dir, "test.pt"), weights_only=False)
 
     elif task == "text_classification":
+        import tensorflow_datasets as tfds
         # imdb is available directly via tfds
         ds_train = tfds.load("imdb_reviews/bytes", split="train", as_supervised=True)
         ds_test = tfds.load("imdb_reviews/bytes", split="test", as_supervised=True)
