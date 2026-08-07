@@ -156,7 +156,7 @@ def main():
     first_batch = next(iter(test_loader))
     input_ids, _, attention_mask = first_batch
 
-    print(f"benchamrking inference time over {args.n_runs} runs...")
+    print(f"benchmarking inference time over {args.n_runs} runs...")
     avg_time_ms, peak_memory_mb = measure_inference(model, input_ids, attention_mask, device, n_runs=args.n_runs)
     print(f"avg inference time: {avg_time_ms:.2f}ms")
     print(f"peak memory: {peak_memory_mb:.2f}MB")
