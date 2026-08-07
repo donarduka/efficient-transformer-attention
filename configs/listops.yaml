@@ -6,7 +6,7 @@
 task: listops
 num_classes: 10
 seq_len: 2048
-vocab:size: 32
+vocab_size: 32
 
 # model - same for all variants
 d_model: 512
