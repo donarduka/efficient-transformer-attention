@@ -30,8 +30,9 @@ from longformer.attention import LongformerAttention
 from linformer.attention import LinformerAttention
 from reformer.attention import ReformerAttention
 
-def load_config(task):
-    config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "configs", f"{task}.yaml")
+def load_config(task, config_path=None):
+    if config_path is None:
+        config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "configs", f"{task}.yaml")
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
     
@@ -190,9 +191,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--variant", required=True, choices=["baseline", "longformer", "linformer", "reformer"])
     parser.add_argument("--task", required=True, choices=["listops", "text_classification", "integration_test"])
+    parser.add_argument("--config", default=None, help="optional path to config file, overrides default")
     args = parser.parse_args()
 
-    config = load_config(args.task)
+    config = load_config(args.task, config_path=args.config)
     torch.manual_seed(config["seed"]) # fix seed for reproducibility
 
     device = get_device()
