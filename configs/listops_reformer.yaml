@@ -1,0 +1,25 @@
+task: listops
+num_classes: 10
+seq_len: 2048
+vocab_size: 20
+
+# model - same for all variants
+d_model: 512
+num_heads: 8
+num_layers: 6
+d_ff: 2048
+dropout: 0.1
+
+# training
+batch_size: 8 # reduced batch size due to memory requirements of LSH chunking at seq_len=2048
+learning_rate: 0.001
+epochs: 20
+warmup_steps: 1000
+seed: 42
+
+# variant-specific settings
+longformer_window_size: 512
+linformer_proj_dim: 256
+reformer_n_rounds: 4
+reformer_chunk_size: 64
+reformer_n_buckets: 32
