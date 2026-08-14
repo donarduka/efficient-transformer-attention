@@ -1,0 +1,27 @@
+using device: cuda
+loading data for listops..
+building baseline model..
+parameters: 18,921,482
+epoch 1/20 - train loss: 2.4277, train acc: 0.0908, test loss: 2.4424, test acc: 0.0815
+epoch 2/20 - train loss: 2.2527, train acc: 0.1697, test loss: 2.2620, test acc: 0.1655
+epoch 3/20 - train loss: 2.2540, train acc: 0.1679, test loss: 2.2596, test acc: 0.1655
+epoch 4/20 - train loss: 2.2541, train acc: 0.1696, test loss: 2.2617, test acc: 0.1705
+epoch 5/20 - train loss: 2.2539, train acc: 0.1694, test loss: 2.2596, test acc: 0.1655
+epoch 6/20 - train loss: 2.2534, train acc: 0.1700, test loss: 2.2626, test acc: 0.1655
+epoch 7/20 - train loss: 2.2535, train acc: 0.1684, test loss: 2.2604, test acc: 0.1705
+epoch 8/20 - train loss: 2.2529, train acc: 0.1698, test loss: 2.2593, test acc: 0.1705
+epoch 9/20 - train loss: 2.2528, train acc: 0.1699, test loss: 2.2587, test acc: 0.1655
+epoch 10/20 - train loss: 2.2529, train acc: 0.1675, test loss: 2.2609, test acc: 0.1705
+epoch 11/20 - train loss: 2.2523, train acc: 0.1680, test loss: 2.2552, test acc: 0.1655
+epoch 12/20 - train loss: 2.2522, train acc: 0.1687, test loss: 2.2528, test acc: 0.1705
+epoch 13/20 - train loss: 2.2518, train acc: 0.1693, test loss: 2.2542, test acc: 0.1705
+epoch 14/20 - train loss: 2.2515, train acc: 0.1709, test loss: 2.2528, test acc: 0.1705
+epoch 15/20 - train loss: 2.2465, train acc: 0.1686, test loss: 2.2516, test acc: 0.1655
+epoch 16/20 - train loss: 2.2437, train acc: 0.1699, test loss: 2.2495, test acc: 0.1660
+epoch 17/20 - train loss: 2.2417, train acc: 0.1699, test loss: 2.2410, test acc: 0.1690
+epoch 18/20 - train loss: 2.2402, train acc: 0.1706, test loss: 2.2415, test acc: 0.1755
+epoch 19/20 - train loss: 2.2387, train acc: 0.1747, test loss: 2.2400, test acc: 0.1830
+epoch 20/20 - train loss: 2.2361, train acc: 0.1811, test loss: 2.2312, test acc: 0.1930
+
+training complete. best test accuracy: 0.1930
+log saved to /users/sgduka/efficient-transformer-attention/results/baseline_listops_log.json

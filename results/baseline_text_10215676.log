@@ -1,0 +1,47 @@
+using device: cuda
+loading data for text_classification..
+WARNING:absl:TFDS datasets with text encoding are deprecated and will be removed in a future version. Instead, you should use the plain text version and tokenize the text using `tensorflow_text` (See: https://www.tensorflow.org/tutorials/tensorflow_text/intro#tfdata_example)
+2026-08-13 03:32:29.537419: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-08-13 03:32:29.611167: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX512_FP16 AVX_VNNI AMX_TILE AMX_INT8 AMX_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2026-08-13 03:32:33.735603: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1786588361.449927 3277530 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 78752 MB memory:  -> device: 0, name: NVIDIA H100 80GB HBM3, pci bus id: 0000:4e:00.0, compute capability: 9.0
+WARNING:absl:TFDS datasets with text encoding are deprecated and will be removed in a future version. Instead, you should use the plain text version and tokenize the text using `tensorflow_text` (See: https://www.tensorflow.org/tutorials/tensorflow_text/intro#tfdata_example)
+2026-08-13 03:32:42.037562: I tensorflow/core/kernels/data/tf_record_dataset_op.cc:396] The default buffer size is 262144, which is overridden by the user specified `buffer_size` of 8388608
+2026-08-13 03:32:48.364175: I tensorflow/core/framework/local_rendezvous.cc:407] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+2026-08-13 03:33:04.507938: I tensorflow/core/framework/local_rendezvous.cc:407] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+building baseline model..
+parameters: 19,038,210
+Traceback (most recent call last):
+  File "/users/sgduka/efficient-transformer-attention/scripts/train.py", line 254, in <module>
+    main()
+  File "/users/sgduka/efficient-transformer-attention/scripts/train.py", line 228, in main
+    train_loss, train_acc = train_epoch(model, train_loader, optimizer, criterion, device)
+  File "/users/sgduka/efficient-transformer-attention/scripts/train.py", line 155, in train_epoch
+    out = model(input_ids, attention_mask=attention_mask)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/users/sgduka/efficient-transformer-attention/baseline/attention.py", line 274, in forward
+    x, attn_w = block(x, mask=pad_mask)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/users/sgduka/efficient-transformer-attention/baseline/attention.py", line 175, in forward
+    x, attn_weights = self.attn(self.norm1(x), mask=mask)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/users/sgduka/efficient-transformer-attention/baseline/attention.py", line 125, in forward
+    context_vecs, attn_weights = self.attention(q, k, v, mask=attn_mask)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/users/sgduka/efficient-transformer-attention/baseline/attention.py", line 37, in forward
+    attn_scores = (q @ k.transpose(-2, -1)) / math.sqrt(d_k)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 4.00 GiB. GPU 0 has a total capacity of 79.18 GiB of which 1.03 GiB is free. Including non-PyTorch memory, this process has 78.14 GiB memory in use. Of the allocated memory 577.41 MiB is allocated by PyTorch, and 4.59 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

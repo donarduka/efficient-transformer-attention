@@ -1,0 +1,38 @@
+using device: cuda
+loading data for text_classification..
+WARNING:absl:TFDS datasets with text encoding are deprecated and will be removed in a future version. Instead, you should use the plain text version and tokenize the text using `tensorflow_text` (See: https://www.tensorflow.org/tutorials/tensorflow_text/intro#tfdata_example)
+2026-08-14 01:42:49.116711: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-08-14 01:42:49.175203: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX512_FP16 AVX_VNNI AMX_TILE AMX_INT8 AMX_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2026-08-14 01:42:58.824506: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1786668182.781797  512335 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 78752 MB memory:  -> device: 0, name: NVIDIA H100 80GB HBM3, pci bus id: 0000:5f:00.0, compute capability: 9.0
+WARNING:absl:TFDS datasets with text encoding are deprecated and will be removed in a future version. Instead, you should use the plain text version and tokenize the text using `tensorflow_text` (See: https://www.tensorflow.org/tutorials/tensorflow_text/intro#tfdata_example)
+2026-08-14 01:43:03.356321: I tensorflow/core/kernels/data/tf_record_dataset_op.cc:396] The default buffer size is 262144, which is overridden by the user specified `buffer_size` of 8388608
+2026-08-14 01:43:09.630194: I tensorflow/core/framework/local_rendezvous.cc:407] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+2026-08-14 01:43:16.893996: I tensorflow/core/framework/local_rendezvous.cc:407] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+building linformer model..
+parameters: 7,416,834
+epoch 1/20 - train loss: 0.7286, train acc: 0.5003, test loss: 0.7385, test acc: 0.4999
+epoch 2/20 - train loss: 0.6942, train acc: 0.5129, test loss: 0.6945, test acc: 0.5136
+epoch 3/20 - train loss: 0.6953, train acc: 0.5144, test loss: 0.6963, test acc: 0.5077
+epoch 4/20 - train loss: 0.6955, train acc: 0.5104, test loss: 0.6968, test acc: 0.5142
+epoch 5/20 - train loss: 0.6951, train acc: 0.5150, test loss: 0.6936, test acc: 0.5166
+epoch 6/20 - train loss: 0.6942, train acc: 0.5181, test loss: 0.7106, test acc: 0.5044
+epoch 7/20 - train loss: 0.6942, train acc: 0.5135, test loss: 0.6990, test acc: 0.5079
+epoch 8/20 - train loss: 0.6935, train acc: 0.5126, test loss: 0.7050, test acc: 0.4998
+epoch 9/20 - train loss: 0.6930, train acc: 0.5143, test loss: 0.6946, test acc: 0.5002
+epoch 10/20 - train loss: 0.6925, train acc: 0.5171, test loss: 0.6942, test acc: 0.5180
+epoch 11/20 - train loss: 0.6925, train acc: 0.5184, test loss: 0.6940, test acc: 0.5158
+epoch 12/20 - train loss: 0.6921, train acc: 0.5220, test loss: 0.6987, test acc: 0.5001
+epoch 13/20 - train loss: 0.6899, train acc: 0.5328, test loss: 0.7001, test acc: 0.5200
+epoch 14/20 - train loss: 0.6849, train acc: 0.5532, test loss: 0.6992, test acc: 0.5114
+epoch 15/20 - train loss: 0.6794, train acc: 0.5649, test loss: 0.7015, test acc: 0.5138
+epoch 16/20 - train loss: 0.6701, train acc: 0.5896, test loss: 0.7218, test acc: 0.5074
+epoch 17/20 - train loss: 0.6373, train acc: 0.6347, test loss: 0.7713, test acc: 0.5109
+epoch 18/20 - train loss: 0.5129, train acc: 0.7505, test loss: 0.9391, test acc: 0.5030
+epoch 19/20 - train loss: 0.2889, train acc: 0.8802, test loss: 1.4162, test acc: 0.5011
+epoch 20/20 - train loss: 0.0912, train acc: 0.9676, test loss: 2.4679, test acc: 0.4986
+
+training complete. best test accuracy: 0.5200
+log saved to /users/sgduka/efficient-transformer-attention/results/linformer_text_classification_log.json

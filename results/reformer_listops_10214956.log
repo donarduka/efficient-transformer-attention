@@ -1,0 +1,32 @@
+using device: cuda
+loading data for listops..
+building reformer model..
+parameters: 17,348,618
+Traceback (most recent call last):
+  File "/users/sgduka/efficient-transformer-attention/scripts/train.py", line 254, in <module>
+    main()
+  File "/users/sgduka/efficient-transformer-attention/scripts/train.py", line 228, in main
+    train_loss, train_acc = train_epoch(model, train_loader, optimizer, criterion, device)
+  File "/users/sgduka/efficient-transformer-attention/scripts/train.py", line 155, in train_epoch
+    out = model(input_ids, attention_mask=attention_mask)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/users/sgduka/efficient-transformer-attention/baseline/attention.py", line 274, in forward
+    x, attn_w = block(x, mask=pad_mask)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/users/sgduka/efficient-transformer-attention/baseline/attention.py", line 175, in forward
+    x, attn_weights = self.attn(self.norm1(x), mask=mask)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/users/sgduka/efficient-transformer-attention/reformer/attention.py", line 220, in forward
+    out_round, attn_weights = self._lsh_attention_single_round(q, k, v, mask)
+  File "/users/sgduka/efficient-transformer-attention/reformer/attention.py", line 176, in _lsh_attention_single_round
+    chunk_attn = torch.nan_to_num(chunk_attn, nan=0.0)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 256.00 MiB. GPU 0 has a total capacity of 79.18 GiB of which 174.94 MiB is free. Including non-PyTorch memory, this process has 79.00 GiB memory in use. Of the allocated memory 78.02 GiB is allocated by PyTorch, and 257.89 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

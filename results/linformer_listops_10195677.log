@@ -1,0 +1,27 @@
+using device: cuda
+loading data for listops..
+building linformer model..
+parameters: 25,219,082
+epoch 1/20 - train loss: 2.3453, train acc: 0.0911, test loss: 2.3704, test acc: 0.0830
+epoch 2/20 - train loss: 2.2546, train acc: 0.1697, test loss: 2.2559, test acc: 0.1700
+epoch 3/20 - train loss: 2.2568, train acc: 0.1697, test loss: 2.2653, test acc: 0.1655
+epoch 4/20 - train loss: 2.2563, train acc: 0.1687, test loss: 2.2599, test acc: 0.1705
+epoch 5/20 - train loss: 2.2513, train acc: 0.1693, test loss: 2.2511, test acc: 0.1705
+epoch 6/20 - train loss: 2.2494, train acc: 0.1712, test loss: 2.2526, test acc: 0.1640
+epoch 7/20 - train loss: 2.2494, train acc: 0.1688, test loss: 2.2554, test acc: 0.1705
+epoch 8/20 - train loss: 2.2491, train acc: 0.1704, test loss: 2.2539, test acc: 0.1640
+epoch 9/20 - train loss: 2.2491, train acc: 0.1705, test loss: 2.2537, test acc: 0.1655
+epoch 10/20 - train loss: 2.2489, train acc: 0.1701, test loss: 2.2530, test acc: 0.1655
+epoch 11/20 - train loss: 2.2491, train acc: 0.1703, test loss: 2.2536, test acc: 0.1655
+epoch 12/20 - train loss: 2.2489, train acc: 0.1707, test loss: 2.2524, test acc: 0.1670
+epoch 13/20 - train loss: 2.2489, train acc: 0.1699, test loss: 2.2527, test acc: 0.1655
+epoch 14/20 - train loss: 2.2490, train acc: 0.1694, test loss: 2.2541, test acc: 0.1720
+epoch 15/20 - train loss: 2.2490, train acc: 0.1694, test loss: 2.2532, test acc: 0.1605
+epoch 16/20 - train loss: 2.2490, train acc: 0.1685, test loss: 2.2535, test acc: 0.1705
+epoch 17/20 - train loss: 2.2488, train acc: 0.1696, test loss: 2.2527, test acc: 0.1595
+epoch 18/20 - train loss: 2.2486, train acc: 0.1719, test loss: 2.2532, test acc: 0.1680
+epoch 19/20 - train loss: 2.2486, train acc: 0.1703, test loss: 2.2517, test acc: 0.1630
+epoch 20/20 - train loss: 2.2488, train acc: 0.1699, test loss: 2.2526, test acc: 0.1610
+
+training complete. best test accuracy: 0.1720
+log saved to /users/sgduka/efficient-transformer-attention/results/linformer_listops_log.json

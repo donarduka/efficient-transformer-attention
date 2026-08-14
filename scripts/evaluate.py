@@ -126,9 +126,10 @@ def main():
     parser.add_argument("--variant", required=True, choices=["baseline", "longformer", "linformer", "reformer"])
     parser.add_argument("--task", required=True, choices=["listops", "text_classification", "integration_test"])
     parser.add_argument("--n_runs", type=int, default=10, help="number of forward passes to average for timing")
+    parser.add_argument("--config", default=None, help="optional path to config file, overrides default")
     args = parser.parse_args()
 
-    config = load_config(args.task)
+    config = load_config(args.task, config_path=args.config)
     torch.manual_seed(config["seed"])
     device = get_device()
     print(f"using device: {device}")

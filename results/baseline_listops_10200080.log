@@ -1,0 +1,18 @@
+using device: cuda
+loading data for listops..
+building baseline model..
+parameters: 18,921,482
+Traceback (most recent call last):
+  File "/users/sgduka/efficient-transformer-attention/scripts/train.py", line 252, in <module>
+    main()
+  File "/users/sgduka/efficient-transformer-attention/scripts/train.py", line 226, in main
+    train_loss, train_acc = train_epoch(model, train_loader, optimizer, criterion, device)
+  File "/users/sgduka/efficient-transformer-attention/scripts/train.py", line 156, in train_epoch
+    loss.backward()
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/_tensor.py", line 647, in backward
+    torch.autograd.backward(
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/autograd/__init__.py", line 354, in backward
+    _engine_run_backward(
+  File "/users/sgduka/venv/lib64/python3.9/site-packages/torch/autograd/graph.py", line 829, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 4.00 GiB. GPU 0 has a total capacity of 79.18 GiB of which 3.42 GiB is free. Including non-PyTorch memory, this process has 75.75 GiB memory in use. Of the allocated memory 73.03 GiB is allocated by PyTorch, and 2.00 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
