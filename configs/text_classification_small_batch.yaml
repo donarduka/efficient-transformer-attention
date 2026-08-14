@@ -3,15 +3,16 @@ num_classes: 2
 seq_len: 4096
 vocab_size: 256
 
-# model - same for all variants
-d_model: 512
-num_heads: 8
-num_layers: 6
-d_ff: 2048
+# model - same for all variants so comparison is fair even with reduced architecture
+# reduced model dimensions for text classification due to GPU memory constraints at seq_len=4096
+d_model: 256
+num_heads: 4
+num_layers: 4
+d_ff: 1024
 dropout: 0.1
 
 # training
-batch_size: 1 # reduced from 32 due to O(n^2) memory requirements at seq_len=4096
+batch_size: 4 # reduced from 32 due to memory requirements at seq_len=4096
 learning_rate: 0.001
 epochs: 20
 warmup_steps: 1000
