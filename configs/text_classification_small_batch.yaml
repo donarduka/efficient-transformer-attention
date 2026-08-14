@@ -11,7 +11,7 @@ d_ff: 2048
 dropout: 0.1
 
 # training
-batch_size: 8 # reduced from 32 due to O(n^2) memory requirements at seq_len=4096
+batch_size: 1 # reduced from 32 due to O(n^2) memory requirements at seq_len=4096
 learning_rate: 0.001
 epochs: 20
 warmup_steps: 1000

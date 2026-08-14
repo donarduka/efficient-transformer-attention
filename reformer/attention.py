@@ -189,7 +189,7 @@ class ReformerAttention(nn.Module):
         out = out_sorted.gather(2, idx_expanded_out) # (batch, num_heads, num_tokens, head_dim)
 
         # return zeros for attn_weights - full matrix not computed, only within-chunk scores
-        attn_weights = torch.zeros(batch, num_heads, num_tokens, num_tokens, device=q.device)
+        attn_weights = torch.zeros(1, 1, 1, 1, device=q.device)
 
         return out, attn_weights
 
