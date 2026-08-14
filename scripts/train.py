@@ -111,28 +111,38 @@ def load_data(config):
 
     elif task == "text_classification":
         import tensorflow_datasets as tfds
+        from torch.utils.data import Dataset
+
+        class IMDbDataset(Dataset):
+            """
+            Lazy-loading dataset for IMDb byte-level text classification.
+            Loads one example at a time instead of all 25000 into memory at once.
+            This avoids OOM errors when seq_len=4096"""
+            def __init__(self, ds, seq_len):
+                self.examples = []
+                for text, label in tfds.as_numpy(ds):
+                    tokens = list(text[:seq_len])
+                    pad_len = seq_len - len(tokens)
+                    mask = [1] * len(tokens) + [0] * pad_len
+                    tokens = tokens + [0] * pad_len
+                    self.examples.append((tokens, int(label), mask))
+
+            def __len__(self):
+                return len(self.examples)
+
+            def __getitem__(self, idx):
+                tokens, label, mask = self.examples[idx]
+                return (
+                    torch.tensor(tokens, dtype=torch.long),
+                    torch.tensor(label, dtype=torch.long),
+                    torch.tensor(mask, dtype=torch.long),
+                )
+
         # imdb is available directly via tfds
         ds_train = tfds.load("imdb_reviews/bytes", split="train", as_supervised=True)
         ds_test = tfds.load("imdb_reviews/bytes", split="test", as_supervised=True)
-
-        def process(ds):
-            input_ids_list, labels_list, masks_list = [], [], []
-            for text, label in tfds.as_numpy(ds):
-                tokens = text[:seq_len]
-                pad_len = seq_len - len(tokens)
-                mask = [1] * len(tokens) + [0] * pad_len
-                tokens = list(tokens) + [0] * pad_len
-                input_ids_list.append(tokens)
-                labels_list.append(int(label))
-                masks_list.append(mask)
-            return TensorDataset(
-                torch.tensor(input_ids_list, dtype=torch.long),
-                torch.tensor(labels_list, dtype=torch.long),
-                torch.tensor(masks_list, dtype=torch.long),
-            )
-        
-        train_data = process(ds_train)
-        test_data = process(ds_test)
+        train_data = IMDbDataset(ds_train, seq_len)
+        test_data = IMDbDataset(ds_test, seq_len)
 
     train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
