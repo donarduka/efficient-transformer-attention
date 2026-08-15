@@ -31,4 +31,4 @@ results/*.pt
 
 # ide
 .vscode/
-.idea/
+.idea/results/models/
