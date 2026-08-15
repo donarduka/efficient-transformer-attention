@@ -1,10 +1,10 @@
 {
   "variant": "linformer",
   "task": "listops",
-  "accuracy": 0.2,
-  "avg_inference_time_ms": 1815.8463460000035,
-  "peak_memory_mb": 0.0,
-  "device": "mps",
+  "accuracy": 0.172,
+  "avg_inference_time_ms": 78.60994873046874,
+  "peak_memory_mb": 4613.24267578125,
+  "device": "cuda",
   "batch_size": 32,
   "seq_len": 2048,
   "n_runs": 10

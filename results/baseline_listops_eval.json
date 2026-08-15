@@ -1,0 +1,11 @@
+{
+  "variant": "baseline",
+  "task": "listops",
+  "accuracy": 0.193,
+  "avg_inference_time_ms": 48.73498306274414,
+  "peak_memory_mb": 8460.44580078125,
+  "device": "cuda",
+  "batch_size": 8,
+  "seq_len": 2048,
+  "n_runs": 10
+}

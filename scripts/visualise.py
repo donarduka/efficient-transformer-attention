@@ -68,12 +68,17 @@ def plot_accuracy(results, task):
     """ Bar chart comparing test accuracy across all 4 variants"""
     variants = list(results.keys())
     accuracies = [results[v]["accuracy"] * 100 for v in variants]
+    colours = [COLOURS[v] for v in variants]
 
     fig, ax = plt.subplots()
-    ax.bar(variants, accuracies)
+    bars = ax.bar(variants, accuracies, color=colours)
+    for bar, val in zip(bars, accuracies):
+        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.2,
+                f"{val:.1f}%", ha="center", va="bottom", fontsize=10)
     ax.set_xlabel("variant")
     ax.set_ylabel("test accuracy (%)")
     ax.set_title(f"accuracy comparison - {task}")
+    ax.set_ylim(0, max(accuracies) * 1.15)
 
     save_plot(fig, f"accuracy_{task}")
     plt.close(fig)
@@ -82,12 +87,17 @@ def plot_inference_time(results, task):
     """Bar chart comparing avg inference time per forward pass"""
     variants = list(results.keys())
     times = [results[v]["avg_inference_time_ms"] for v in variants]
+    colours = [COLOURS[v] for v in variants]
 
     fig, ax = plt.subplots()
-    ax.bar(variants, times)
+    bars = ax.bar(variants, times, color=colours)
+    for bar, val in zip(bars, times):
+        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.2,
+                f"{val:.1f}ms", ha="center", va="bottom", fontsize=10)
     ax.set_xlabel("variant")
     ax.set_ylabel("avg inference time (ms)")
     ax.set_title(f"inference time comparison - {task}")
+    ax.set_ylim(0, max(times) * 1.15)
 
     save_plot(fig, f"inference_time_{task}")
     plt.close(fig)
@@ -101,12 +111,18 @@ def plot_memory(results, task):
     if all(m == 0 for m in memory):
         print(f"skipping memory plot for {task} - peak memory only available on CUDA")
         return
+
+    colours = [COLOURS[v] for v in variants]
     
     fig, ax = plt.subplots()
-    ax.bar(variants, memory)
+    bars = ax.bar(variants, memory, color=colours)
+    for bar, val in zip(bars, memory):
+        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 10,
+                f"{val:.0f}MB", ha="center", va="bottom", fontsize=10)
     ax.set_xlabel("variant")
     ax.set_ylabel("peak memory (MB)")
     ax.set_title(f"peak memory comparison - {task}")
+    ax.set_ylim(0, max(memory) * 1.15)
 
     save_plot(fig, f"memory_{task}")
     plt.close(fig)
