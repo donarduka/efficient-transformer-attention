@@ -202,10 +202,13 @@ def main():
     parser.add_argument("--variant", required=True, choices=["baseline", "longformer", "linformer", "reformer"])
     parser.add_argument("--task", required=True, choices=["listops", "text_classification", "integration_test"])
     parser.add_argument("--config", default=None, help="optional path to config file, overrides default")
+    parser.add_argument("--seed", type=int, default=None, help="random seed, overrides config seed")
     args = parser.parse_args()
 
     config = load_config(args.task, config_path=args.config)
-    torch.manual_seed(config["seed"]) # fix seed for reproducibility
+    # command line seed overrides config seed if provided
+    seed = args.seed if args.seed is not None else config["seed"]
+    torch.manual_seed(seed)
 
     device = get_device()
     print(f"using device: {device}")
@@ -248,11 +251,11 @@ def main():
             best_acc = test_acc
             results_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results")
             os.makedirs(results_dir, exist_ok=True)
-            torch.save(model.state_dict(), os.path.join(results_dir, f"{args.variant}_{args.task}_best.pt"))
+            torch.save(model.state_dict(), os.path.join(results_dir, f"{args.variant}_{args.task}_seed{seed}_best.pt"))
 
     results_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results")
     os.makedirs(results_dir, exist_ok=True)
-    log_path = os.path.join(results_dir, f"{args.variant}_{args.task}_log.json")
+    log_path = os.path.join(results_dir, f"{args.variant}_{args.task}_seed{seed}_log.json")
     with open(log_path, "w") as f:
         json.dump(log, f, indent=2)
 
