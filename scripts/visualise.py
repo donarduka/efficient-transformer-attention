@@ -32,6 +32,7 @@ PLOTS_DIR = os.path.join(RESULTS_DIR, "plots")
 
 VARIANTS = ["baseline", "longformer", "linformer", "reformer"]
 COLOURS = {"baseline": "blue", "longformer": "red", "linformer": "green", "reformer": "orange"}
+SEEDS = [42, 1, 2]
 
 def load_eval_results(task):
     """ Load evaluation JSON files for all variants for the given task"""
@@ -47,15 +48,35 @@ def load_eval_results(task):
 
 def load_training_logs(task):
     """ Load training log JSON files for all variants for the given task"""
-    logs = {}
+    seed_logs = {}
     for variant in VARIANTS:
-        path = os.path.join(RESULTS_DIR, f"{variant}_{task}_log.json")
-        if os.path.exists(path):
-            with open(path, "r") as f:
-                logs[variant] = json.load(f)
+        logs = []
+        for seed in SEEDS:
+            # seed 42 uses original filename seed suffix
+            if seed == 42:
+                path = os.path.join(RESULTS_DIR, f"{variant}_{task}_log.json")
+            else:
+                path = os.path.join(RESULTS_DIR, f"{variant}_{task}_seed{seed}_log.json")
+            if os.path.exists(path):
+                with open(path, "r") as f:
+                    logs.append(json.load(f))
+        if logs:
+            seed_logs[variant] = logs
         else:
             print(f"warning: no training log found for {variant} on {task} - skipping")
-    return logs
+    return seed_logs
+
+def compute_mean_std(seed_logs):
+    """Compute mean and std of best test accuracy across seeds."""
+    import numpy as np
+    results = {}
+    for variant, logs in seed_logs.items():
+        best_accs = [max(e["test_acc"] for e in log) for log in logs]
+        results[variant] = {
+            "mean": np.mean(best_accs) * 100,
+            "std": np.std(best_accs) * 100
+        }
+    return results
 
 def save_plot(fig, name):
     """ save as both png (for dissertation doc) and pdf (for quality)"""
@@ -65,21 +86,21 @@ def save_plot(fig, name):
     print(f"saved {name}.png and {name}.pdf")
 
 def plot_accuracy(results, task):
-    """ Bar chart comparing test accuracy across all 4 variants"""
+    """ Bar chart comparing mean test accuracy with std error bars across seeds."""
     variants = list(results.keys())
-    accuracies = [results[v]["accuracy"] * 100 for v in variants]
+    means = [results[v]["mean"] for v in variants]
+    stds = [results[v]["std"] for v in variants]
     colours = [COLOURS[v] for v in variants]
 
     fig, ax = plt.subplots()
-    bars = ax.bar(variants, accuracies, color=colours)
-    for bar, val in zip(bars, accuracies):
-        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.2,
-                f"{val:.1f}%", ha="center", va="bottom", fontsize=10)
+    bars = ax.bar(variants, means, color=colours, yerr=stds, capsize=8, error_kw={"elinewidth": 2.5, "ecolor": "black", "capthick": 2.5})
+    for bar, val, std in zip(bars, means, stds):
+        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + std + 0.3, f"{val:.1f}%", ha="center", va="bottom", fontsize=10)
+
     ax.set_xlabel("variant")
     ax.set_ylabel("test accuracy (%)")
     ax.set_title(f"accuracy comparison - {task}")
-    ax.set_ylim(0, max(accuracies) * 1.15)
-
+    ax.set_ylim(min(means) * 0.9, max(means) * 1.15)
     save_plot(fig, f"accuracy_{task}")
     plt.close(fig)
 
@@ -185,7 +206,9 @@ def plot_training_curves(logs, task):
     """
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
 
-    for variant, log in logs.items():
+    for variant, logs_list in logs.items():
+        # use seed 42 log (first in list) for training curves
+        log = logs_list[0]
         epochs = [e["epoch"] for e in log]
         train_loss = [e["train_loss"] for e in log]
         test_loss = [e["test_loss"] for e in log]
@@ -221,25 +244,25 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", required=True, choices=["listops", "text_classification", "integration_test"])
     args = parser.parse_args()
-
     print(f"generating plots for {args.task}...\n")
 
     # sequence length benchmark - independent of task from benchmark_seq_len.py
     plot_seq_len_benchmark()
 
-    # training curves only need training logs
-    logs = load_training_logs(args.task)
-    if logs:
-        plot_training_curves(logs, args.task)
+    # training curves and accuracy from seed logs
+    seed_logs = load_training_logs(args.task)
+    if seed_logs:
+        plot_training_curves(seed_logs, args.task)
+        mean_std_results = compute_mean_std(seed_logs)
+        plot_accuracy(mean_std_results, args.task)
 
-    #accuracy, timing and memory need evaluate.py to have been run first
+    #inference time and memory from evaluate.py output
     results = load_eval_results(args.task)
     if results:
-        plot_accuracy(results, args.task)
         plot_inference_time(results, args.task)
         plot_memory(results, args.task)
     else:
-        print("no eval results found - run scripts/evaluate.py first for accuracy and timing plots")
+        print("no eval results found - run scripts/evaluate.py first timing and memory plots")
 
     print(f"\nall plots saved to results/plots/")
 

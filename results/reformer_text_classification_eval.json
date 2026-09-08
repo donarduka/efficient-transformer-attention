@@ -1,0 +1,11 @@
+{
+  "variant": "reformer",
+  "task": "text_classification",
+  "accuracy": 0.61876,
+  "avg_inference_time_ms": 6.65793285369873,
+  "peak_memory_mb": 139.7373046875,
+  "device": "cuda",
+  "batch_size": 1,
+  "seq_len": 4096,
+  "n_runs": 10
+}

@@ -1,0 +1,11 @@
+{
+  "variant": "linformer",
+  "task": "text_classification",
+  "accuracy": 0.52,
+  "avg_inference_time_ms": 1.6109376072883606,
+  "peak_memory_mb": 140.35986328125,
+  "device": "cuda",
+  "batch_size": 1,
+  "seq_len": 4096,
+  "n_runs": 10
+}
