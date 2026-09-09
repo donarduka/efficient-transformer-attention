@@ -237,7 +237,42 @@ def plot_training_curves(logs, task):
     save_plot(fig, f"training_curves_{task}")
     plt.close(fig)
 
+def plot_training_curves_per_variant(seed_logs, task):
+    """
+    Per-variant training curves with mean and shaded std band across seeds.
+    One figure per variant - loss and accuracy side by side.
+    """
+    import numpy as np
 
+    for variant, logs in seed_logs.items():
+        epochs = [e["epoch"] for e in logs[0]]
+        colour = COLOURS[variant]
+
+        # stack all seeds then compute mean and std
+        def get_metric(key, scale=1):
+            return np.array([[e[key] * scale for e in log] for log in logs])
+
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+
+        for ax, train_key, test_key, ylabel, scale in [
+            (ax1, "train_loss", "test_loss", "loss", 1),
+            (ax2, "train_acc", "test_acc", "accuracy (%)", 100),
+        ]:
+            train = get_metric(train_key, scale)
+            test = get_metric(test_key, scale)
+
+            ax.plot(epochs, train.mean(0), color=colour, label="train")
+            ax.fill_between(epochs, train.mean(0) - train.std(0), train.mean(0) + train.std(0), alpha=0.2, color=colour)
+            ax.plot(epochs, test.mean(0), color=colour, linestyle="--", label="test")
+            ax.fill_between(epochs, test.mean(0) - test.std(0), test.mean(0) + test.std(0), alpha=0.1, color=colour)
+            ax.set_xlabel("epoch")
+            ax.set_ylabel(ylabel)
+            ax.set_title(f"{ylabel.split(' ')[0]} - {variant} ({task})")
+            ax.legend()
+
+        fig.tight_layout()
+        save_plot(fig, f"training_curves_{variant}_{task}")
+        plt.close(fig)
 
 def main():
 
@@ -253,6 +288,7 @@ def main():
     seed_logs = load_training_logs(args.task)
     if seed_logs:
         plot_training_curves(seed_logs, args.task)
+        plot_training_curves_per_variant(seed_logs, args.task)
         mean_std_results = compute_mean_std(seed_logs)
         plot_accuracy(mean_std_results, args.task)
 
