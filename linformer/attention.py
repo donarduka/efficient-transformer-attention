@@ -7,16 +7,12 @@ Replaces the O(n^2) full attention matrix with a low-rank approximation:
     - K and V are projected from seq_len down to a much smaller fixed size (proj_dim) using learned linear projections E and F
     - Q stays full length so attention scores become (num_tokens, proj_dim) instead of (num_tokens, num_tokens)
 
-This reduces complexity from O(n^2) to O(n*k) where k = proj_dim is fixed and independent of sequence length following [X] Wang et al. (2020) Theorem 2.
+This reduces complexity from O(n^2) to O(n*k) where k = proj_dim is fixed and independent of sequence length following Wang et al. (2020), Theorem 2.
 
 Padding tokens are zeroed out in K and V before projection since after E and F are applied each compressed position is a mixture of all original positions and can no longer be masked individually.
 
 E and F require a fixed seq_len at construction time since they are linear layers that map seq_len -> proj_dim.
 This works for LRA tasks where sequences are padded to a constant length per task.
-
-Reference:
-    [X] Wang et al., "Linformer: Self-Attention with Linear Complexity", 2020.
-    https://arxiv.org/abs/2006.04768
 """
 
 import math
@@ -32,7 +28,7 @@ class LinformerAttention(nn.Module):
     Q stays at full sequence length but K and V are compressed from seq_len down to proj_dim using learned linear projections E and F respectively. 
     Attention is then computed between the full-length Q and the compressed K, V, giving attention scores of shape (num_tokens, proj_dim) instead of (num_tokens, num_tokens).
 
-    E and F are separate learned projections, following the basic linear projection method in [X] Wang et al. (2020) Section 4, Equation 7. 
+    E and F are separate learned projections, following the basic linear projection method in Wang et al. (2020) Section 4, Equation 7. 
     Parameter sharing across heads/layers is mentioned in the paper as a further optimisation but is not implemented here to keep the architecture straightforward.
 
     This class exposes the same forward(x, mask) signature as MultiHeadSelfAttention in baseline/attention.py so it can be passed as attn_cls into TransformerEncoderBlock without any other changes.
@@ -42,7 +38,7 @@ class LinformerAttention(nn.Module):
         num_heads (int): number of attention heads.
         dropout (float): applied to attention weights.
         seq_len (int): fixed sequence length E and F are built for. Must match the padded sequence length used by the task.
-        proj_dim (int): compressed dimension k that K and V are projected down to. Defaults to 128, following [X] Wang et al. who show k=128 performs close to full attention.
+        proj_dim (int): compressed dimension k that K and V are projected down to. Defaults to 128, following Wang et al. (2020) who show k=128 performs close to full attention.
     """
 
     def __init__(self, d_model, num_heads, dropout=0.1, seq_len=512, proj_dim=128):
@@ -149,21 +145,4 @@ class LinformerAttention(nn.Module):
         out = self.dropout(self.W_o(self._merge_heads(context_vecs)))
 
         return out, attn_weights
-
-
-""" NOTES
-
-    Linformer compresses K and V from seq_len down to much smaller fixed proj_dim using learned linear projections E and F instead of comparing every query against every key. Q stays full length. Reduces O(n^2) to O(n*k).
-
-    E and F project along the sequence dimension, not the feature dimension. nn.Linear always acts on the last dimension of a tensor so K and V have to be transposed first (seq_len moved to last) then transposed back. This is what _project_sequence does.
-
-    E and F need a fixed seq_len at construction time since they are just nn.Linear(seq_len, proj_dim). Only works because LRA sequences are padded to a constant length per task.
-
-    proj_dim defaults to 128 following the paper which shows k=128 performs close to full attention even at long sequence lengths.
-
-    E and F kept separate (not shared across heads/layers) to keep things simple given timeframe. Paper shows parameter sharing barely hurts performance - noted as possible extension but not implemented here.
-
-    Padding is handled differently compared to baseline/Longformer. Cant mask the compressed K/V after projection since each compressed position is a mix of every original position including padding ones. Instead, padding tokens are zeroed out in K and V before E and F are applied so they never contribute to the compressed result.
-
-    No nan_to_num here - there is no -inf masking happening on attention scores themselves unlike baseline and Longformer.
-"""
+    

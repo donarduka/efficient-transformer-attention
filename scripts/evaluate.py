@@ -1,5 +1,5 @@
 """
-scipts/evaluate.py
+scripts/evaluate.py
 
 Evaluation and benchmarking script for all four attention variants.
 
@@ -11,10 +11,10 @@ Loads a trained model from results/, runs it on the test set and records:
 Results are saved to results/ as a JSON file for use in visualisation.
 
 Usage:
-    python3 scipts/evaluate.py --variant baseline --task listops
-    python3 scipts/evaluate.py --variant longformer --task text_classification
-    python3 scipts/evaluate.py --variant linformer --task lisops
-    python3 scipts/evaluate.py --variant reformer --task text_classificaiton
+    python3 scripts/evaluate.py --variant baseline --task listops
+    python3 scripts/evaluate.py --variant longformer --task text_classification
+    python3 scripts/evaluate.py --variant linformer --task listops
+    python3 scripts/evaluate.py --variant reformer --task text_classification
 """
 
 import os
@@ -96,7 +96,7 @@ def evaluate(model, loader, device):
     Run the model on the full test set and compute accuracy.
 
     Args:
-        model: tained model in eval mode
+        model: trained model in eval mode
         loader: test Dataloader
         device: torch device
 

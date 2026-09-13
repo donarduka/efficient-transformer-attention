@@ -20,7 +20,7 @@ All four implementations (baseline + 3 variants) are benchmarked on tasks from t
 - Inference time per forward pass
 - Peak memory usage
 
-across multiple sequence lengths with results averaged over multiple runs with fixed random seeds for reproducibility.
+Results are averaged across three independent random seeds for reproducibility.
 
 ## Project structure
 
@@ -40,7 +40,7 @@ Python, PyTorch, Hugging Face Transformers, NumPy, Matplotlib.
 
 ## Status
 
-In progress.
+Complete.
 
 ## License
 

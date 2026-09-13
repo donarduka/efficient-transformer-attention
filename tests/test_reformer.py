@@ -49,7 +49,7 @@ def test_forward_with_mask():
     print("test forward with mask passed")
 
 def test_multi_round_differs_from_single_round():
-    # each round uses a different random projection matrix so the outputs should differ - avergaing multiple rounds should give a different result to just one round
+    # each round uses a different random projection matrix so the outputs should differ - averaging multiple rounds should give a different result to just one round
     torch.manual_seed(0)
     attn_single = ReformerAttention(D_MODEL, NUM_HEADS, dropout=0.0, n_rounds=1, chunk_size=CHUNK_SIZE)
     attn_multi = ReformerAttention(D_MODEL, NUM_HEADS, dropout=0.0, n_rounds=4, chunk_size=CHUNK_SIZE)

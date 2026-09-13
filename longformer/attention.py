@@ -11,12 +11,8 @@ This reduces complexity from O(n^2) to O(n * window_size), making it practical f
 The window size can be changed to allow experiments across different hardware.
 
 Two sets of Q, K, V projections are used - one for local window attention and one for global attention -
-following [X] Beltagy et al. (2020) Section 3.1 which shows that separate projections are critical for
+following Beltagy et al. (2020) Section 3.1 which shows that separate projections are critical for
 downstream performance (Table 10).
-
-Reference:
-    [X] Beltagy et al., "Longformer: The Long-Document Transformer", 2020.
-    https://arxiv.org/abs/2004.05150
 """
 
 import math
@@ -32,7 +28,7 @@ class LongformerAttention(nn.Module):
     Each token attends to a local window of size window_size around it. Position 0 is treated as a global token - it attends to all positions and vice versa. 
     This gives the model a way to aggregate document-level context needed for classification.
 
-    Two separate sets of Q, K, V projections are used for local and global attention respectively, following [X] Beltagy et al. (2020) Section 3.1.
+    Two separate sets of Q, K, V projections are used for local and global attention respectively, following Beltagy et al. (2020) Section 3.1.
 
     This class exposes the same forward(x, mask) signature as MultiHeadSelfAttention in baseline/attention.py so it can be passed as attn_cls into TransformerEncoderBlock without any other changes.
 
@@ -59,7 +55,7 @@ class LongformerAttention(nn.Module):
         self.W_vs = nn.Linear(d_model, d_model, bias=False)
 
         # global projections - used for global token at position 0
-        # initialised to match local projections as recommended in [X] Beltagy et al.
+        # initialised to match local projections as recommended in Beltagy et al. (2020).
         self.W_qg = nn.Linear(d_model, d_model, bias=False)
         self.W_kg = nn.Linear(d_model, d_model, bias=False)
         self.W_vg = nn.Linear(d_model, d_model, bias=False)
@@ -74,7 +70,7 @@ class LongformerAttention(nn.Module):
             nn.init.xavier_uniform_(linear.weight)
         nn.init.zeros_(self.W_o.bias)
 
-        # initialise global projections to match local ones as per [X] Beltagy et al.
+        # initialise global projections to match local ones as per Beltagy et al. (2020).
         self.W_qg.weight.data.copy_(self.W_qs.weight.data)
         self.W_kg.weight.data.copy_(self.W_ks.weight.data)
         self.W_vg.weight.data.copy_(self.W_vs.weight.data)

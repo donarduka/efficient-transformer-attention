@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from longformer.attention import LongformerAttention
 
-#small dimensions so tets run fast - window size small enough to actually restrict attention
+#small dimensions so tests run fast - window size small enough to actually restrict attention
 BATCH = 2
 SEQ_LEN = 32
 D_MODEL = 64
@@ -60,7 +60,7 @@ def test_window_mask_restricts_attention():
     # position 10 with window_size=4 should only attend to positions 6-14
     # position 0 (global) and anyhting outside [6-14] should be 0 or very small
     # check position 20 has zero weight from position 10 (distance > window)
-    # weights shaoe: (batch, seq_len, seq_len)
+    # weights shape: (batch, seq_len, seq_len)
     weight_10_to_20 = weights[0, :, 10, 20] # all heads, query10, key=20
     assert (weight_10_to_20 < 1e-6).all(), \
         f"token 10 should not attend to token 20 with window_size={WINDOW_SIZE}"

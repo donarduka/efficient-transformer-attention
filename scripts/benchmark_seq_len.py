@@ -10,7 +10,7 @@ it uses at each sequence length. This directly tests the complexity claims from 
 - linformer -> O(n * proj_dim)
 - reformer -> O(n log n)
 
-The Reformer paper [X] Kitaev et al. (2020) Figure 5 shows LSH only beats full attention beyond ~2048 tokens
+The Reformer paper Kitaev et al. (2020) Figure 5 shows LSH only beats full attention beyond ~2048 tokens
     - this benchmark replicates that experiment.
 
 Results are saved to results/benchmark_seq_len.json for plotting with visualise.py
@@ -58,7 +58,7 @@ N_RUNS = 20 # number of forward passes to avg over
 
 def benchmark_variant(variant, seq_len, device, n_runs=N_RUNS):
     """
-    Measure average inference time and peak memory for one variant at on sequence length.
+    Measure average inference time and peak memory for one variant at one sequence length.
 
     Runs a warmup pass first to avoid measuring JIT/compilation overhead then averages over n_runs forward passes.
 

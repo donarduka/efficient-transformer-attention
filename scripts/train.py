@@ -6,10 +6,10 @@ Shared training loop for all four attention variants
 Loads the config for the specified task, builds the model with the specified attention variant, trains on the LRA dataset and saves the trained model and training log to results/.
 
 Usage:
-    python3 scipt/train.py --variant baseline --task listops
-    python3 scipt/train.py --variant longformer --task text_classification
-    python3 scipt/train.py --variant linformer --task listops
-    python3 scipt/train.py --variant reformer --task text_classification
+    python3 scripts/train.py --variant baseline --task listops
+    python3 scripts/train.py --variant longformer --task text_classification
+    python3 scripts/train.py --variant linformer --task listops
+    python3 scripts/train.py --variant reformer --task text_classification
 
 All four variants run through the same BaselineTransformerEncoder stack - only the attention class changes, satisfying the unified evaluation framework.
 """
@@ -41,7 +41,7 @@ def build_model(config, variant):
     Build the encoder with the specified attention variant.
 
     All four variants use the same BaselineTransformerEncoder - only attn_cls changes.
-    Variant specified kwargs (keyword arguments) are passed via a closure so the encoder block's attn_cls(d_model, num_heads, dropout) call still works for all varaints.
+    Variant specified kwargs (keyword arguments) are passed via a closure so the encoder block's attn_cls(d_model, num_heads, dropout) call still works for all variants.
     """
     if variant == "baseline":
         attn_cls = MultiHeadSelfAttention
@@ -92,7 +92,7 @@ def get_device():
 def load_data(config):
     """
     Load the LRA dataset for the specified task using tensorflow_datasets.
-    Returns train and test DataLoaders. The LRA datasets are loaded as described in [X] Tay et al. (2020).
+    Returns train and test DataLoaders. The LRA datasets are loaded as described in Tay et al. (2020).
     """
     from torch.utils.data import DataLoader, TensorDataset
 

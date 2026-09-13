@@ -3,7 +3,7 @@ tests/test_linformer.py
 
 Sanity checks for the Linformer attention module. Checks output shapes, no NaNs, that the projection
 dimension is correct and that the seq_len assertion words.
-Run repo from root with:
+Run from repo root with:
     python3 tests/test_linformer.py
 
 """
@@ -37,7 +37,7 @@ def test_forward_with_mask():
     attn = LinformerAttention(D_MODEL, NUM_HEADS, dropout=0.0, seq_len=SEQ_LEN, proj_dim=PROJ_DIM)
     x = torch.randn(BATCH, SEQ_LEN, D_MODEL)
 
-    # last 6 positons are padding
+    # last 6 positions are padding
     mask = torch.zeros(BATCH, SEQ_LEN, dtype=torch.bool)
     mask[:, -6:] = True
 

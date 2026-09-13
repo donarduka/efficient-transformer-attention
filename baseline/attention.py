@@ -5,10 +5,6 @@ Standard multi-head self-attention - O(n^2) reference implementation.
 
 Longformer, Linformer and Reformer are all drop-in replacements for MultiHeadSelfAttention.
 They share the same forward(x, mask) signature so the encoder block doesnt need to change between experiments.
-
-Reference:
-    [X] Vaswani et al., "Attention Is All You Need", NeurIPS 2017.
-    https://arxiv.org/abs/1706.03762
 """
 
 import math
@@ -19,7 +15,7 @@ import torch.nn.functional as F
 
 class ScaledDotProductAttention(nn.Module):
     """
-    Computes softmax(QK^T / sqrt(d_k)) V - Equation 1 in [X] Vaswani et al. (2017).
+    Computes softmax(QK^T / sqrt(d_k)) V - See Vaswani et al. (2017), Equation 1.
     Kept separate so it can be unit tested on its own.
     """
 
@@ -33,7 +29,7 @@ class ScaledDotProductAttention(nn.Module):
         d_k = q.size(-1)
 
         # (batch, heads, num_tokens, head_dim) @ (batch, heads, head_dim, num_tokens) -> (batch, heads, num_tokens, num_tokens)
-        # scale by sqrt(d_k) - Vaswani et al. [X] footnote p.4 explains that large d_k causes dot products to grow large, pushing softmax into regions of very small gradients
+        # scale by sqrt(d_k) - Vaswani et al. (2017), footnote p.4 explains that large d_k causes dot products to grow large, pushing softmax into regions of very small gradients
         attn_scores = (q @ k.transpose(-2, -1)) / math.sqrt(d_k)
 
         if mask is not None:
@@ -53,7 +49,7 @@ class ScaledDotProductAttention(nn.Module):
 
 class MultiHeadSelfAttention(nn.Module):
     """
-    Multi-head self-attention from [X] Vaswani et al. (2017), Section 3.2.
+    Multi-head self-attention from Vaswani et al. (2017), Section 3.2.
 
     Projects input into h query/key/value spaces of dimension head_dim = d_model // h, runs attention in parallel across all heads then concatenates and projects back.
 
@@ -73,7 +69,7 @@ class MultiHeadSelfAttention(nn.Module):
         self.num_heads = num_heads
         self.head_dim = d_model // num_heads
 
-        # W_q, W_k, W_v, W_o kept explicit to match notation in [X] Vaswani et al.
+        # W_q, W_k, W_v, W_o kept explicit to match notation in Vaswani et al. (2017).
         self.W_q = nn.Linear(d_model, d_model, bias=False)
         self.W_k = nn.Linear(d_model, d_model, bias=False)
         self.W_v = nn.Linear(d_model, d_model, bias=False)
@@ -133,7 +129,7 @@ class MultiHeadSelfAttention(nn.Module):
 class FeedForward(nn.Module):
     """
     Position-wise FFN - two linear layers with GELU activation.
-    Structure and inner dimension (4 * d_model) follow [X] Vaswani et al. Section 3.3.
+    Structure and inner dimension (4 * d_model) follow Vaswani et al. (2017), Section 3.3.
     Original paper uses ReLU but GELU is used here as it has become standard in more recent transformer implementations and generally performs better.
     """
 
@@ -153,7 +149,7 @@ class TransformerEncoderBlock(nn.Module):
     """
     Single encoder block: pre-norm self-attention + pre-norm FFN, both with residuals.
 
-    Pre-norm is used instead of post-norm as it trains more stably at smaller batch sizes - also used in [X] Beltagy et al. (2020) Longformer, Appendix B.
+    Pre-norm is used instead of post-norm as it trains more stably at smaller batch sizes - also used in Beltagy et al. (2020) Longformer, Appendix B.
 
     attn_cls is how the four variants share this block - passing a different attention class here swaps the mechanism without changing anything else.
     """
@@ -183,7 +179,7 @@ class TransformerEncoderBlock(nn.Module):
 
 class SinusoidalPositionalEncoding(nn.Module):
     """
-    Fixed sinusoidal positional encoding from [X] Vaswani et al. (2017), Section 3.5.
+    Fixed sinusoidal positional encoding from Vaswani et al. (2017), Section 3.5.
 
     PE(pos, 2i) = sin(pos / 10000^(2i / d_model))
     PE(pos, 2i+1) = cos(pos / 10000^(2i / d_model))
@@ -215,7 +211,7 @@ class BaselineTransformerEncoder(nn.Module):
 
     Architecture: token embedding -> positional encoding -> N x TransformerEncoderBlock -> LayerNorm -> mean pool -> classifier.
 
-    attn_cls is passed to every block so all four variants run through the same stack under identical conditions, satisfying the unified evaluation framework required by [X] Tay et al. (2020) LRA benchmark.
+    attn_cls is passed to every block so all four variants run through the same stack under identical conditions, satisfying the unified evaluation framework required by Tay et al. (2020) LRA benchmark.
 
     Args:
         vocab_size (int): vocabulary size.
@@ -287,30 +283,4 @@ class BaselineTransformerEncoder(nn.Module):
         logits = self.classifier(x)
 
         return {"logits": logits, "attn_weights": all_attn_weights}
-
-
-""" NOTES
-
-    nn.LayerNorm - keeps the numbers in the model from getting too big or small as they pass through each layer. Makes training more stable.
-
-    nn.Embedding - converts word/token IDs into vectors the model can actually learn from.
-
-    nn.ModuleList - a list of layers that PyTorch sees and trains. Normal Python list would make PyTorch ignore the layers.
-
-    register_buffer - saves the positional encoding inside the model so it moves to GPU with everything else, not updated during training.
-
-    masked_fill - stamps -inf onto padding positions before softmax so they end up as 0 and get ignored.
-
-    nan_to_num - if every position in a row is padding you get 0/0 which is NaN. Replace with 0 so training doesnt crash.
-
-    .contiguous() - PyTorch needs data laid out in memory after swapping dimensions before it can reshape.
-
-    .clamp(min=1) - stops division by 0 in the mean pooling step if entire sequence is padding.
-
-    unsqueeze - adds an extra dimension to a tensor so it lines up correctly with another tensor of a different shape.
-
-    Masked mean pooling - when collapsing the sequence to one vector for classification, only average real tokens and ignore padding.
-
-    Returning a dict from forward - easy to grab both predictions and attention patterns from a single forward pass without changing anything else.
-
-"""
+    

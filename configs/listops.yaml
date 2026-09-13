@@ -1,6 +1,6 @@
 # listops.yaml
 # config for the ListOps task - 10-way classification, seq_len 2048
-# settings based on LRA paper [X] Tay et al. (2020) Appendix A.1
+# settings based on LRA paper Tay et al. (2020) Appendix A.1
 # free-for-all setting so can be adjusted if hardware is a bottleneck
 
 task: listops

@@ -9,15 +9,11 @@ Replaces the O(n^2) full attention matrix with an LSH approximation:
     - attention is only computed within each bucket, reducing complexity to O(n log n)
     - multiple rounds of hashing reduce the chance of missing relevant token pairs
 
-The LSH scheme follows [X] Kitaev et al. (2020) Section 2. The hash function is:
+The LSH scheme follows Kitaev et al. (2020) Section 2. The hash function is:
     h(x) = argmax([xR; -xR]) where R is a random projection matrix.
 Tokens that map to the same bucket are likely to have high dot products and therefore high attention scores.
 
-Reversible residual layers (also from [X] Kitaev et al.) are not implemented here as they are an architectural change outside the scope of the attention module.
-
-Reference:
-    [X] Kitaev et al., "Reformer: The Efficient Transformer", ICLR 2020.
-    https://arxiv.org/abs/2001.04451
+Reversible residual layers (also from Kitaev et al. (2020)) are not implemented here as they are an architectural change outside the scope of the attention module.
 """
 
 import math
@@ -28,7 +24,7 @@ import torch.nn.functional as F
 
 class ReformerAttention(nn.Module):
     """
-    Reformer LSH attention from [X] Kitaev et al. (2020).
+    Reformer LSH attention from Kitaev et al. (2020).
 
     Q and K share the same linear projection. After projection K is normalised so that Q and K point in the same direction in vector space, 
     which is required for the LSH hash to group similar queries and keys into the same bucket.
@@ -44,7 +40,7 @@ class ReformerAttention(nn.Module):
         num_heads (int): number of attention heads.
         dropout (float): applied to attention weights.
         n_rounds (int): number of LSH hashing rounds. More rounds means fewer missed pairs but higher compute cost. 
-                        Defaults to 4, following [X] Kitaev et al. Table 2 which shows 4 rounds approaches full attention accuracy.
+                        Defaults to 4, following Kitaev et al. (2020) Table 2 which shows 4 rounds approaches full attention accuracy.
         n_buckets (int): number of LSH buckets. If None, set to seq_len // chunk_size at forward time, following the paper's convention.
         chunk_size (int): number of tokens per chunk after sorting by bucket. Defaults to 64.
     """
@@ -92,7 +88,7 @@ class ReformerAttention(nn.Module):
         """
         Compute LSH bucket assignments for a set of vectors.
 
-        Uses the random projection scheme from [X] Kitaev et al. (2020):
+        Uses the random projection scheme from Kitaev et al. (2020):
             h(x) = argmax([xR; -xR]) 
             - where R is a random matrix of shape (head_dim, n_buckets // 2).
 
@@ -120,7 +116,7 @@ class ReformerAttention(nn.Module):
         """
         Compute one round of LSH attention.
 
-        Tokens are hashed into buckets, sorted by bucket index and split into chunks. Attention is computed within each chunk and the chunk before it, following [X] Kitaev et al. (2020) Figure 2.
+        Tokens are hashed into buckets, sorted by bucket index and split into chunks. Attention is computed within each chunk and the chunk before it, following Kitaev et al. (2020) Figure 2.
 
         Args:
             q, k, v (Tensor): (batch, num_heads, num_tokens, head_dim)
@@ -171,7 +167,7 @@ class ReformerAttention(nn.Module):
         chunk_scores = (q_chunks @ k_combined.transpose(-2, -1)) / math.sqrt(head_dim)
 
         # prevent tokens attending to themselves - shared QK means a token would otherwise always attend most strongly to itself
-        # for simplicity we rely on softmax normalisation here rather than explicit masking, following [X] Kitaev et al. Section 2
+        # for simplicity we rely on softmax normalisation here rather than explicit masking, following Kitaev et al. (2020) Section 2
         chunk_attn = F.softmax(chunk_scores, dim=-1)
         chunk_attn = torch.nan_to_num(chunk_attn, nan=0.0)
         chunk_attn = self.dropout(chunk_attn)
@@ -207,14 +203,14 @@ class ReformerAttention(nn.Module):
         # (batch, num_tokens, d_model) -> (batch, num_heads, num_tokens, head_dim)
         q = self._split_heads(self.W_qk(x))
 
-        # normalise K to unit norm - required for LSH angular hashing to work correctly, following [X] Kitaev et al. Section 2
+        # normalise K to unit norm - required for LSH angular hashing to work correctly, following Kitaev et al. (2020) Section 2
         k = F.normalize(q, p=2, dim=-1) # (batch, num_heads, num_tokens, head_dim)
 
         # (batch, num_tokens, d_model) -> (batch, num_heads, num_tokens, head_dim)
         v = self._split_heads(self.W_v(x))
 
         # run multiple rounds of LSH attention and average the outputs
-        # more rounds = fewer missed relevant pairs, following [X] Kitaev et al. Equation 6 and Table 2
+        # more rounds = fewer missed relevant pairs, following Kitaev et al. (2020) Equation 6 and Table 2
         all_outputs = []
         for _ in range(self.n_rounds):
             out_round, attn_weights = self._lsh_attention_single_round(q, k, v, mask)
